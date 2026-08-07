@@ -36,7 +36,6 @@
     font-family: "Courier New", "SFMono-Regular", Consolas, monospace;
   }
 
-
   #lock {
     position: fixed; inset: 0;
     background: #0a0a0a;
@@ -79,8 +78,6 @@
   .terminal .hint { color: #555; margin-top: 1rem; font-size: 10.5px; }
   .terminal .error { color: var(--red-bright); font-size: 10.5px; margin-top: 0.6rem; height: 1em; }
 
-  /* ============ DESKTOP ============ */
-
   #desktop {
     min-height: 100vh;
     padding: 5rem 1.25rem 6rem;
@@ -119,6 +116,11 @@
   }
   .category h2::before { content: "C:\\"; color: rgba(255,255,255,0.3); }
 
+  .about-text {
+    font-size: 0.78rem;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.85);
+  }
   .item {
     padding: 0.6rem 0;
   }
@@ -188,8 +190,6 @@
       margin-top: 0.15rem;
     }
   }
-
-  /* ============ OS WINDOW ============ */
 
   #overlay {
     position: fixed; inset: 0;
@@ -302,8 +302,10 @@
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     font-size: 0.55rem; color: #9a9689; letter-spacing: 0.5px;
+    overflow: hidden;
   }
   .thumb:hover { border-color: var(--red); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   .viewer {
     display: none;
@@ -316,7 +318,9 @@
     display: flex; align-items: center; justify-content: center;
     color: #9a9689; font-size: 0.65rem; letter-spacing: 0.5px;
     margin-bottom: 0.6rem;
+    overflow: hidden;
   }
+  .viewer .big img { width: 100%; height: 100%; object-fit: contain; display: block; }
   .viewer .back {
     font-size: 0.62rem; letter-spacing: 1px; text-transform: uppercase;
     color: var(--red); background: none; border: none; cursor: pointer;
@@ -340,7 +344,6 @@
 </head>
 <body>
 
-<!-- LOCK SCREEN -->
 <div id="lock">
   <div class="terminal mono">
     <div class="prompt-line"><span class="sym">&gt;</span><span>ACCESS REQUIRES PASSWORD</span></div>
@@ -353,14 +356,22 @@
   </div>
 </div>
 
-<!-- DESKTOP -->
 <div id="desktop">
   <main>
     <p class="site-title">Mădălina Zgreabăn's Archive</p>
-
+    
+    <div class="category">
+      <h2>About</h2>
+      <p class="about-text">I am a researcher interested in language &amp; A.I., currently pursuing a PhD in responsible AI at Utrecht University, with previous work on robustness testing, human alignment, and various language phenomena (e.g. humour and insults). I am broadly interested in how we create, relate to, and embody technologies; the risks they entail, the ways they shape memory and emotion; and language as a technology. I have recently started to work on the projects listed here, and I am open to collaborations concerning language, technology and AI.</p>
+    </div>
     <div class="category">
       <h2>Projects</h2>
       <div id="projects-list"></div>
+    </div>
+
+    <div class="category">
+      <h2>Expos / Presentations</h2>
+      <div id="expos-list"></div>
     </div>
 
     <div class="category">
@@ -377,7 +388,6 @@
   </main>
 </div>
 
-<!-- WINDOW OVERLAY -->
 <div id="overlay">
   <div class="window">
     <div class="titlebar">
@@ -393,7 +403,7 @@
         <span id="win-type"></span>
       </div>
       <h3 id="win-heading"></h3>
-      <p id="win-desc"></p>
+      <div id="win-desc"></div>
 
       <div class="label">Contribution / Learning curve</div>
       <p class="learn" id="win-learn"></p>
@@ -406,13 +416,15 @@
         <button class="back mono" id="viewer-back">&larr; back to grid</button>
         <div class="big" id="viewer-big">image</div>
       </div>
+
+      <div class="label">Presented at</div>
+      <div id="win-presented"></div>
     </div>
   </div>
 </div>
 
 <script>
 
-  
 const PASSWORD = "freewifi2026";
 
 const lock = document.getElementById('lock');
@@ -439,29 +451,57 @@ if (sessionStorage.getItem('unlocked') === '1') {
   setTimeout(() => passInput.focus(), 300);
 }
 
-/* ---------- project data ---------- */
+/* ---------- project data ----------
+   desc is now an ARRAY of paragraphs. Each item = one paragraph.
+   To add a blank line / new paragraph, just add a new item to the array.
+   To add a plain line break within a paragraph (no blank line), that's
+   not supported by design here — split it into two paragraph items instead,
+   which keeps the HTML simple and avoids stray-character bugs. */
 const projects = [
   {
     id: 'balkanmaxxing',
     title: 'Balkanmaxxing*',
     year: '2026–Ongoing',
-    type: 'Interactive / Video installations · web plug-in · collage series',
-    desc: "A 3-chapter project exploring Romania's cultural and political development across 4 decades, from the fall of communism to the resurgence of the far right, as reflected by its emerging technologies. Chapter 1, Video & personal archives: a video installation built around footage from my parents' wedding, exploring the impact of personal archives in the first post-communist decade. Chapter 2, Talk shows and the early internet: a website plug-in called 'Easternezied girls', exploring the beginning of the internet and the boom of gossip scandal shows, critically discussing the representation and stigmatization of several feminine archetypes (the promiscuous, the traditional, and the babuska). Chapter 3, Algorithms and mass delusion: a series of collages exploring the metaphors pushed forward by TikTok algorithms surrounding the last canceled Romanian elections and the rise of the far right.",
-    learn: '[Add: what you did / learned on this project]',
-    images: 1
+    type: 'Interactive / Video installations · Web plug-in · Collage series',
+    desc: [
+      "A 3-chapter project exploring Romania's post-comunist cultural and political development across 4 decades, from the fall of communism to the resurgence of the far right, as reflected by its emerging technologies.",
+      "Chapter 1. Video & personal archives: the impact of personal archives in the first post-communist decade, as explored through footage from my parents' wedding.",
+      "Chapter 2. Talk shows and the early internet: the beginning of the internet, the boom of gossip scandal shows, & representations of several feminine archetypes (the promiscuous, the traditional, and the babuska).",
+      "Chapter 3. Algorithms and mass delusion: TikTok algorithms surrounding the last canceled Romanian elections and the rise of the far right."
+    ],
+    learn: 'Curently working with iii in The Hague for Chapter 2.',
+    images: [
+      'images/balkanmaxxing/1.jpg', 
+      'images/balkanmaxxing/2.jpg'
+    ],
+ 
   },
   {
     id: 'affirmation',
     title: 'The Affirmation Machine',
     year: '2026',
     type: 'Two-person audio installation',
-    desc: "The Affirmation Machine explores the mechanics of chatbot-amplified delusional spirals, evaluates the dangers of reinforcing both mainstream and divergent truths, and reflects on how technologies can exploit existing psychological mechanisms. The work aims to examine narratives of control that are created, influenced, or amplified by and through the use of AI. The Affirmation Machine questions your digital agency in a world of AI chatbots — what forms of control are you subjecting yourself to? The installation is designed for two people to experience together. The onboarding instructions are the users' first contact with the work: they are told they will listen to a relaxing, meditative experience, instructed to lie down together comfortably, close the cover, put on headphones, and let a machine 'read them' via a camera for a more personalized audio experience. The camera is only an illusion — it does not work, and is used solely to make the experience feel more real, and to make users feel watched. After both participants press a button, the audio experience starts, and they hear a comforting voice giving meditation-like instructions for approximately 7 minutes. Throughout the audio, participants mostly lie relaxed, until close to the end, when they are instructed to look at each other and nod to answer a question. This creates space for interaction later: upon exiting the installation, they are instructed to take a question card and discuss the experience with the person they entered with. The goal of the questions is to spark conversation about dependence and the consequences of AI chatbot use, and, on a more abstract level, the systems of control that surround AI.",
-    learn: '[Add: what you did / learned on this project]',
-    images: 6
+    desc: [
+      "In a world of AI chatbots, what forms of control are you subjecting yourself to?",
+      "The Affirmation Machine is a two-person audio installation about the mechanics of chatbot-amplified delusional spirals, the dangers of reinforcing both mainstream and divergent truths, and about how technologies can exploit our existing psychological mechanisms.",
+      "It is designed to experience by two people: useres are told they will listen to a relaxing, meditative experience, and are instructed to lie down together comfortably, close the cover, put on headphones, and let a machine 'read them' via a camera for a personalized audio experience. Only an illusion, the camera is not functional and only serves the purpose of people feeling like they are being watched. The audio starts once participants press a button, after which they hear a comforting meditation-like voice giving them instructuns for ~7 minutes. The participants lay mostly relaxed, until close to the end when they are instructed to look at each other and nod to answer a question. Upon exiting the installation, they are instructed to take a question card and discuss the experience with each other, aimed at sparking conversation about AI chatbot use and its surrounding systems of control.",
+    ],
+    learn: 'Learned and helped about/with the conceptual and physical design of the  installation.',
+    images: [
+      'images/affirmation/1.jpg',
+      'images/affirmation/2.jpg',
+      'images/affirmation/3.jpg',
+      'images/affirmation/4.jpg',
+      'images/affirmation/5.jpg',
+      'images/affirmation/6.jpg'
+    ],
+    presented: [
+      '[CODE/ Final project presentation, 2026]'
+    ]
   }
 ];
 
-/* ---------- render project list ---------- */
+
 const listEl = document.getElementById('projects-list');
 projects.forEach(p => {
   const btn = document.createElement('button');
@@ -471,12 +511,14 @@ projects.forEach(p => {
   listEl.appendChild(btn);
 });
 
-  
+const expos = [
+  { year: '[2026]', org: 'Final CODE presentation', programme: 'The Affirmation Machine' },
+];
 const residencies = [
-  { year: '[20XX]', org: 'CODE', programme: '[Add programme name]' },
+  { year: '[2026]', org: 'CODE', programme: 'Reclaiming Digital Agency' },
 ];
 const courses = [
-  { year: '[20XX]', org: 'Baltan Laboratories', programme: '[Add programme name]' },
+  { year: '[2026]', org: 'Baltan Laboratories', programme: 'Make Technology Yours Again 2' },
 ];
 
 function renderSimple(containerId, rows) {
@@ -490,6 +532,7 @@ function renderSimple(containerId, rows) {
   `).join('');
 }
 
+renderSimple('expos-list', expos);
 renderSimple('residencies-list', residencies);
 renderSimple('courses-list', courses);
 
@@ -502,6 +545,7 @@ const winHeading = document.getElementById('win-heading');
 const winDesc = document.getElementById('win-desc');
 const winLearn = document.getElementById('win-learn');
 const winThumbs = document.getElementById('win-thumbs');
+const winPresented = document.getElementById('win-presented');
 const gallery = document.getElementById('win-gallery');
 const viewer = document.getElementById('win-viewer');
 const viewerBig = document.getElementById('viewer-big');
@@ -511,21 +555,25 @@ function openWindow(p) {
   winYear.textContent = p.year;
   winType.textContent = p.type;
   winHeading.textContent = p.title;
-  winDesc.textContent = p.desc;
+
+  winDesc.innerHTML = p.desc.map(paragraph => `<p>${paragraph}</p>`).join('');
+
   winLearn.textContent = p.learn;
 
+  winPresented.innerHTML = p.presented.map(line => `<p class="learn">${line}</p>`).join('');
+
   winThumbs.innerHTML = '';
-  for (let i = 1; i <= p.images; i++) {
+  p.images.forEach((src, i) => {
     const t = document.createElement('div');
     t.className = 'thumb';
-    t.textContent = 'img ' + i;
+    t.innerHTML = `<img src="${src}" alt="${p.title} — image ${i + 1}" loading="lazy">`;
     t.addEventListener('click', () => {
-      viewerBig.textContent = p.title + ' — image ' + i;
+      viewerBig.innerHTML = `<img src="${src}" alt="${p.title} — image ${i + 1}">`;
       gallery.classList.add('hidden');
       viewer.classList.add('open');
     });
     winThumbs.appendChild(t);
-  }
+  });
 
   gallery.classList.remove('hidden');
   viewer.classList.remove('open');
@@ -544,3 +592,4 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') overlay.clas
 
 </body>
 </html>
+
