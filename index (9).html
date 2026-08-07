@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Archive</title>
+<style>
+  @font-face {
+    font-family: 'system-mono';
+    src: local('Courier New');
+  }
+
+  :root {
+    --red: #B0121A;
+    --red-dark: #7A0C12;
+    --red-bright: #E8121B;
+    --paper: #F3F1EA;
+    --ink: #1a1a1a;
+    --white: #ffffff;
+    --dim: rgba(255,255,255,0.55);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: var(--red);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  .mono {
+    font-family: "Courier New", "SFMono-Regular", Consolas, monospace;
+  }
+
+  /* ============ LOCK SCREEN ============ */
+
+  #lock {
+    position: fixed; inset: 0;
+    background: #0a0a0a;
+    color: #d8d8d8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+  }
+
+  #lock.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .terminal {
+    width: 100%;
+    max-width: 380px;
+    padding: 0 1.5rem;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .terminal .prompt-line { display: flex; align-items: center; }
+  .terminal .prompt-line span.sym { color: var(--red-bright); margin-right: 0.5rem; }
+
+  #pass-input {
+    background: none;
+    border: none;
+    border-bottom: 1px solid #444;
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 12px;
+    padding: 0.3rem 0;
+    width: 100%;
+    outline: none;
+    letter-spacing: 2px;
+  }
+
+  #pass-input:focus { border-bottom-color: var(--red-bright); }
+
+  .terminal .hint { color: #555; margin-top: 1rem; font-size: 10.5px; }
+  .terminal .error { color: var(--red-bright); font-size: 10.5px; margin-top: 0.6rem; height: 1em; }
+
+  /* ============ DESKTOP ============ */
+
+  #desktop {
+    min-height: 100vh;
+    padding: 5rem 1.25rem 6rem;
+    opacity: 0;
+    transition: opacity 0.6s ease 0.1s;
+  }
+
+  #desktop.show { opacity: 1; }
+
+  main {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .site-title {
+    text-align: center;
+    font-size: 0.62rem;
+    letter-spacing: 3px;
+    color: var(--dim);
+    margin-bottom: 4.5rem;
+    text-transform: uppercase;
+  }
+
+  .category {
+    margin-bottom: 4rem;
+  }
+
+  .category h2 {
+    font-family: "Courier New", monospace;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 1.3rem;
+  }
+  .category h2::before { content: "C:\\"; color: rgba(255,255,255,0.3); }
+
+  .item {
+    padding: 0.6rem 0;
+  }
+
+  .item.project {
+    display: grid;
+    grid-template-columns: 5rem 9rem 1fr;
+    column-gap: 0.9rem;
+    align-items: start;
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .item.project .yr {
+    font-family: "Courier New", monospace;
+    font-size: 0.66rem;
+    color: var(--dim);
+  }
+
+  .item.project .name {
+    font-family: "Courier New", monospace;
+    font-weight: 700;
+    font-size: 0.76rem;
+    letter-spacing: 0.3px;
+    color: var(--white);
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+
+  .item.project:hover .name { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+
+  .item.project .type {
+    font-size: 0.66rem;
+    line-height: 1.45;
+    color: var(--dim);
+  }
+
+  .item.simple {
+    display: grid;
+    grid-template-columns: 5rem 9rem 1fr;
+    column-gap: 0.9rem;
+    align-items: start;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.8);
+    padding: 0.5rem 0;
+  }
+
+  .item.simple .yr {
+    font-family: "Courier New", monospace;
+    font-size: 0.66rem;
+    color: var(--dim);
+  }
+
+  .item.simple .org { color: rgba(255,255,255,0.85); }
+  .item.simple .prog { color: var(--dim); font-style: italic; }
+
+  @media (max-width: 480px) {
+    .item.project, .item.simple {
+      grid-template-columns: 3.6rem 1fr;
+    }
+    .item.project .type, .item.simple .prog {
+      grid-column: 1 / -1;
+      margin-top: 0.15rem;
+    }
+  }
+
+  /* ============ OS WINDOW ============ */
+
+  #overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1.25rem;
+  }
+
+  #overlay.open { display: flex; }
+
+  .window {
+    background: var(--paper);
+    color: var(--ink);
+    width: 100%;
+    max-width: 620px;
+    max-height: 86vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.25);
+    border: 1px solid #8a0d13;
+  }
+
+  .titlebar {
+    background: linear-gradient(180deg, var(--red-bright), var(--red-dark));
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0.6rem;
+    flex: 0 0 auto;
+  }
+
+  .titlebar .tname {
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .titlebar .controls { display: flex; gap: 5px; }
+  .titlebar .controls span {
+    width: 13px; height: 13px;
+    background: #fff;
+    border: 1px solid var(--red-dark);
+    display: inline-block;
+  }
+  .titlebar .controls .close {
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--red-dark); font-weight: 700;
+    font-family: monospace;
+  }
+  .titlebar .controls .close:hover { background: #ffe5e5; }
+
+  .win-body {
+    padding: 1.4rem 1.5rem;
+    overflow-y: auto;
+  }
+
+  .win-body .meta-row {
+    display: flex; gap: 1.2rem;
+    font-size: 0.62rem;
+    color: #7a7a72;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.5px;
+  }
+  .win-body .meta-row b { color: var(--ink); }
+
+  .win-body h3 {
+    font-size: 1.05rem;
+    letter-spacing: 0.2px;
+    margin-bottom: 0.9rem;
+  }
+
+  .win-body p {
+    font-size: 0.82rem;
+    line-height: 1.65;
+    margin-bottom: 1rem;
+    color: #2a2a2a;
+  }
+
+  .win-body .label {
+    font-size: 0.58rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #a3a39a;
+    margin: 1.4rem 0 0.6rem;
+    border-top: 1px dashed #d8d5cc;
+    padding-top: 1rem;
+  }
+
+  .win-body .learn {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: #55554d;
+  }
+
+  .thumbs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .thumb {
+    aspect-ratio: 1;
+    background: repeating-linear-gradient(45deg, #e2ded2, #e2ded2 4px, #d6d2c4 4px, #d6d2c4 8px);
+    border: 1px solid #c9c5b8;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem; color: #9a9689; letter-spacing: 0.5px;
+  }
+  .thumb:hover { border-color: var(--red); }
+
+  .viewer {
+    display: none;
+  }
+  .viewer.open { display: block; }
+  .viewer .big {
+    width: 100%; aspect-ratio: 4/3;
+    background: repeating-linear-gradient(45deg, #e2ded2, #e2ded2 6px, #d6d2c4 6px, #d6d2c4 12px);
+    border: 1px solid #c9c5b8;
+    display: flex; align-items: center; justify-content: center;
+    color: #9a9689; font-size: 0.65rem; letter-spacing: 0.5px;
+    margin-bottom: 0.6rem;
+  }
+  .viewer .back {
+    font-size: 0.62rem; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--red); background: none; border: none; cursor: pointer;
+    font-family: inherit; padding: 0; margin-bottom: 1rem;
+  }
+
+  .gallery.hidden { display: none; }
+
+  footer.credit {
+    text-align: center;
+    font-size: 0.6rem;
+    color: var(--dim);
+    margin-top: 3rem;
+    letter-spacing: 0.5px;
+  }
+
+  @media (max-width: 480px) {
+    .thumbs { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div id="lock">
+  <div class="terminal mono">
+    <div class="prompt-line"><span class="sym">&gt;</span><span>ACCESS REQUIRES PASSWORD</span></div>
+    <div class="prompt-line" style="margin-top:0.8rem;">
+      <span class="sym">&gt;</span>
+      <input type="password" id="pass-input" autocomplete="off" spellcheck="false" placeholder="">
+    </div>
+    <div class="error" id="pass-error"></div>
+    <div class="hint">press enter</div>
+  </div>
+</div>
+
+<!-- DESKTOP -->
+<div id="desktop">
+  <main>
+    <p class="site-title">Archive</p>
+
+    <div class="category">
+      <h2>Projects</h2>
+      <div id="projects-list"></div>
+    </div>
+
+    <div class="category">
+      <h2>Residencies</h2>
+      <div id="residencies-list"></div>
+    </div>
+
+    <div class="category">
+      <h2>Courses / Critical AI</h2>
+      <div id="courses-list"></div>
+    </div>
+
+    <footer class="credit">© 2026</footer>
+  </main>
+</div>
+
+<!-- WINDOW OVERLAY -->
+<div id="overlay">
+  <div class="window">
+    <div class="titlebar">
+      <span class="tname mono" id="win-title">project.exe</span>
+      <div class="controls">
+        <span></span><span></span>
+        <span class="close mono" id="win-close">&times;</span>
+      </div>
+    </div>
+    <div class="win-body">
+      <div class="meta-row mono">
+        <span><b id="win-year"></b></span>
+        <span id="win-type"></span>
+      </div>
+      <h3 id="win-heading"></h3>
+      <p id="win-desc"></p>
+
+      <div class="label">What I did / learned</div>
+      <p class="learn" id="win-learn"></p>
+
+      <div class="label">Images</div>
+      <div class="gallery" id="win-gallery">
+        <div class="thumbs" id="win-thumbs"></div>
+      </div>
+      <div class="viewer" id="win-viewer">
+        <button class="back mono" id="viewer-back">&larr; back to grid</button>
+        <div class="big" id="viewer-big">image</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- password gate ---------- */
+/* NOTE: this is obscurity, not real security — anyone viewing page source can find this.
+   Change PASSWORD below to whatever you like before you publish. */
+const PASSWORD = "roast2026";
+
+const lock = document.getElementById('lock');
+const passInput = document.getElementById('pass-input');
+const passError = document.getElementById('pass-error');
+
+function tryUnlock() {
+  if (passInput.value === PASSWORD) {
+    sessionStorage.setItem('unlocked', '1');
+    lock.classList.add('hidden');
+    document.getElementById('desktop').classList.add('show');
+  } else {
+    passError.textContent = 'incorrect';
+    passInput.value = '';
+  }
+}
+
+passInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+if (sessionStorage.getItem('unlocked') === '1') {
+  lock.classList.add('hidden');
+  document.getElementById('desktop').classList.add('show');
+} else {
+  setTimeout(() => passInput.focus(), 300);
+}
+
+/* ---------- project data ---------- */
+const projects = [
+  {
+    id: 'balkanmaxxing',
+    title: 'Balkanmaxxing*',
+    year: '2026–Ongoing',
+    type: 'Video installation · web plug-in · collage series',
+    desc: "A 3-chapter project exploring Romania's cultural and political development across 4 decades, from the fall of communism to the resurgence of the far right, as reflected by its emerging technologies. Chapter 1, Video & personal archives: a video installation built around footage from my parents' wedding, exploring the impact of personal archives in the first post-communist decade. Chapter 2, Talk shows and the early internet: a website plug-in called 'Easternezied girls', exploring the beginning of the internet and the boom of gossip scandal shows, critically discussing the representation and stigmatization of several feminine archetypes (the promiscuous, the traditional, and the babuska). Chapter 3, Algorithms and mass delusion: a series of collages exploring the metaphors pushed forward by TikTok algorithms surrounding the last canceled Romanian elections and the rise of the far right.",
+    learn: '[Add: what you did / learned on this project]',
+    images: 6
+  },
+  {
+    id: 'affirmation',
+    title: 'The Affirmation Machine',
+    year: '2026',
+    type: 'Two-person audio installation',
+    desc: "The Affirmation Machine explores the mechanics of chatbot-amplified delusional spirals, evaluates the dangers of reinforcing both mainstream and divergent truths, and reflects on how technologies can exploit existing psychological mechanisms. The work aims to examine narratives of control that are created, influenced, or amplified by and through the use of AI. The Affirmation Machine questions your digital agency in a world of AI chatbots — what forms of control are you subjecting yourself to? The installation is designed for two people to experience together. The onboarding instructions are the users' first contact with the work: they are told they will listen to a relaxing, meditative experience, instructed to lie down together comfortably, close the cover, put on headphones, and let a machine 'read them' via a camera for a more personalized audio experience. The camera is only an illusion — it does not work, and is used solely to make the experience feel more real, and to make users feel watched. After both participants press a button, the audio experience starts, and they hear a comforting voice giving meditation-like instructions for approximately 7 minutes. Throughout the audio, participants mostly lie relaxed, until close to the end, when they are instructed to look at each other and nod to answer a question. This creates space for interaction later: upon exiting the installation, they are instructed to take a question card and discuss the experience with the person they entered with. The goal of the questions is to spark conversation about dependence and the consequences of AI chatbot use, and, on a more abstract level, the systems of control that surround AI.",
+    learn: '[Add: what you did / learned on this project]',
+    images: 6
+  }
+];
+
+/* ---------- render project list ---------- */
+const listEl = document.getElementById('projects-list');
+projects.forEach(p => {
+  const btn = document.createElement('button');
+  btn.className = 'item project';
+  btn.innerHTML = `<span class="yr mono">${p.year}</span><span class="name">${p.id}.exe</span><span class="type">${p.type}</span>`;
+  btn.addEventListener('click', () => openWindow(p));
+  listEl.appendChild(btn);
+});
+
+/* ---------- residencies / courses (placeholders — fill in real year/org/programme) ---------- */
+const residencies = [
+  { year: '[20XX]', org: 'CODE', programme: '[Add programme name]' },
+];
+const courses = [
+  { year: '[20XX]', org: 'Baltan Laboratories', programme: '[Add programme name]' },
+];
+
+function renderSimple(containerId, rows) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = rows.map(r => `
+    <div class="item simple">
+      <span class="yr mono">${r.year}</span>
+      <span class="org">${r.org}</span>
+      <span class="prog">${r.programme}</span>
+    </div>
+  `).join('');
+}
+
+renderSimple('residencies-list', residencies);
+renderSimple('courses-list', courses);
+
+/* ---------- window logic ---------- */
+const overlay = document.getElementById('overlay');
+const winTitle = document.getElementById('win-title');
+const winYear = document.getElementById('win-year');
+const winType = document.getElementById('win-type');
+const winHeading = document.getElementById('win-heading');
+const winDesc = document.getElementById('win-desc');
+const winLearn = document.getElementById('win-learn');
+const winThumbs = document.getElementById('win-thumbs');
+const gallery = document.getElementById('win-gallery');
+const viewer = document.getElementById('win-viewer');
+const viewerBig = document.getElementById('viewer-big');
+
+function openWindow(p) {
+  winTitle.textContent = p.id + '.exe';
+  winYear.textContent = p.year;
+  winType.textContent = p.type;
+  winHeading.textContent = p.title;
+  winDesc.textContent = p.desc;
+  winLearn.textContent = p.learn;
+
+  winThumbs.innerHTML = '';
+  for (let i = 1; i <= p.images; i++) {
+    const t = document.createElement('div');
+    t.className = 'thumb';
+    t.textContent = 'img ' + i;
+    t.addEventListener('click', () => {
+      viewerBig.textContent = p.title + ' — image ' + i;
+      gallery.classList.add('hidden');
+      viewer.classList.add('open');
+    });
+    winThumbs.appendChild(t);
+  }
+
+  gallery.classList.remove('hidden');
+  viewer.classList.remove('open');
+  overlay.classList.add('open');
+}
+
+document.getElementById('viewer-back').addEventListener('click', () => {
+  viewer.classList.remove('open');
+  gallery.classList.remove('hidden');
+});
+
+document.getElementById('win-close').addEventListener('click', () => overlay.classList.remove('open'));
+overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') overlay.classList.remove('open'); });
+</script>
+
+</body>
+</html>
