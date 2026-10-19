@@ -7,15 +7,15 @@
 <title>MĂDĂLINA ZGREABĂN'S ARCHIVE</title>
 <style>
   @font-face {
-    font-family: 'system-mono';f
+    font-family: 'system-mono';
     src: local('Courier New');
   }
 
   :root {
-    --red: #B0121A;
-    --red-dark: #7A0C12;
-    --red-bright: #E8121B;
-    --paper: #F3F1EA;
+    --red: #7a0c12;
+    --red-dark: #7a0c12;
+    --red-bright: #7a0c12;
+    --paper: #7a0c12;
     --ink: #1a1a1a;
     --white: #ffffff;
     --dim: rgba(255,255,255,0.55);
@@ -28,7 +28,7 @@
   body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     background: var(--red);
-    color: var(--white);
+    color: #790C5A;
     overflow-x: hidden;
   }
 
@@ -36,56 +36,11 @@
     font-family: "Courier New", "SFMono-Regular", Consolas, monospace;
   }
 
-  #lock {
-    position: fixed; inset: 0;
-    background: #0a0a0a;
-    color: #d8d8d8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-  }
-
-  #lock.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-  .terminal {
-    width: 100%;
-    max-width: 380px;
-    padding: 0 1.5rem;
-    font-size: 12px;
-    line-height: 1.8;
-  }
-
-  .terminal .prompt-line { display: flex; align-items: center; }
-  .terminal .prompt-line span.sym { color: var(--red-bright); margin-right: 0.5rem; }
-
-  #pass-input {
-    background: none;
-    border: none;
-    border-bottom: 1px solid #444;
-    color: #f0f0f0;
-    font-family: inherit;
-    font-size: 12px;
-    padding: 0.3rem 0;
-    width: 100%;
-    outline: none;
-    letter-spacing: 2px;
-  }
-
-  #pass-input:focus { border-bottom-color: var(--red-bright); }
-
-  .terminal .hint { color: #555; margin-top: 1rem; font-size: 10.5px; }
-  .terminal .error { color: var(--red-bright); font-size: 10.5px; margin-top: 0.6rem; height: 1em; }
-
   #desktop {
     min-height: 100vh;
     padding: 5rem 1.25rem 6rem;
-    opacity: 0;
-    transition: opacity 0.6s ease 0.1s;
+    opacity: 1;
   }
-
-  #desktop.show { opacity: 1; }
 
   main {
     max-width: 480px;
@@ -114,17 +69,22 @@
     color: var(--dim);
     margin-bottom: 1.3rem;
   }
-  .category h2::before { content: "C:\\"; color: rgba(255,255,255,0.3); }
+
+  .category h2::before {
+    content: "C:\\";
+    color: rgba(255,255,255,0.3);
+  }
 
   .about-text {
     font-size: 0.78rem;
     line-height: 1.75;
     color: rgba(255,255,255,0.85);
   }
+
   .contact-icons {
-  display: flex;
-  gap: 1.4rem;
-  align-items: center;
+    display: flex;
+    gap: 1.4rem;
+    align-items: center;
   }
 
   .contact-icons a {
@@ -132,10 +92,14 @@
     display: flex;
     transition: color 0.15s ease;
   }
-  
+
   .contact-icons a:hover { color: var(--white); }
-  
-  .contact-icons svg { width: 20px; height: 20px; display: block; }
+
+  .contact-icons svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
 
   .item.project {
     display: grid;
@@ -166,7 +130,11 @@
     line-height: 1.4;
   }
 
-  .item.project:hover .name { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+  .item.project:hover .name {
+    color: var(--paper);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
   .item.project .type {
     font-size: 0.66rem;
@@ -197,6 +165,7 @@
     .item.project, .item.simple {
       grid-template-columns: 3.6rem 1fr;
     }
+
     .item.project .type, .item.simple .prog {
       grid-column: 1 / -1;
       margin-top: 0.15rem;
@@ -204,7 +173,8 @@
   }
 
   #overlay {
-    position: fixed; inset: 0;
+    position: fixed;
+    inset: 0;
     background: rgba(0,0,0,0.35);
     display: none;
     align-items: center;
@@ -243,19 +213,30 @@
     text-transform: uppercase;
   }
 
-  .titlebar .controls { display: flex; gap: 5px; }
+  .titlebar .controls {
+    display: flex;
+    gap: 5px;
+  }
+
   .titlebar .controls span {
-    width: 13px; height: 13px;
+    width: 13px;
+    height: 13px;
     background: #fff;
     border: 1px solid var(--red-dark);
     display: inline-block;
   }
+
   .titlebar .controls .close {
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; color: var(--red-dark); font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--red-dark);
+    font-weight: 700;
     font-family: monospace;
   }
+
   .titlebar .controls .close:hover { background: #ffe5e5; }
 
   .win-body {
@@ -264,12 +245,14 @@
   }
 
   .win-body .meta-row {
-    display: flex; gap: 1.2rem;
+    display: flex;
+    gap: 1.2rem;
     font-size: 0.62rem;
     color: #7a7a72;
     margin-bottom: 1.2rem;
     letter-spacing: 0.5px;
   }
+
   .win-body .meta-row b { color: var(--ink); }
 
   .win-body h3 {
@@ -312,31 +295,60 @@
     background: #e2ded2;
     border: 1px solid #c9c5b8;
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.55rem; color: #9a9689; letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    color: #9a9689;
+    letter-spacing: 0.5px;
     overflow: hidden;
   }
-  .thumb:hover { border-color: var(--red); }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  .viewer {
-    display: none;
+  .thumb:hover { border-color: var(--red); }
+
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
+
+  .viewer { display: none; }
   .viewer.open { display: block; }
+
   .viewer .big {
-    width: 100%; aspect-ratio: 4/3;
+    width: 100%;
+    aspect-ratio: 4/3;
     background: #e2ded2;
     border: 1px solid #c9c5b8;
-    display: flex; align-items: center; justify-content: center;
-    color: #9a9689; font-size: 0.65rem; letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9a9689;
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
     margin-bottom: 0.6rem;
     overflow: hidden;
   }
-  .viewer .big img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+  .viewer .big img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
   .viewer .back {
-    font-size: 0.62rem; letter-spacing: 1px; text-transform: uppercase;
-    color: var(--red); background: none; border: none; cursor: pointer;
-    font-family: inherit; padding: 0; margin-bottom: 1rem;
+    font-size: 0.62rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--red);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+    margin-bottom: 1rem;
   }
 
   .gallery.hidden { display: none; }
@@ -352,37 +364,107 @@
   @media (max-width: 480px) {
     .thumbs { grid-template-columns: repeat(3, 1fr); }
   }
+  body,
+.window {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* Black text and contact icons */
+.site-title,
+.category h2,
+.category h2::before,
+.about-text,
+.contact-icons a,
+.contact-icons a:hover,
+.item.project .yr,
+.item.project .name,
+.item.project:hover .name,
+.item.project .type,
+.item.simple,
+.item.simple .yr,
+.item.simple .org,
+.item.simple .prog,
+.win-body .meta-row,
+.win-body .meta-row b,
+.win-body h3,
+.win-body p,
+.win-body .label,
+.win-body .learn,
+.viewer .back,
+footer.credit {
+  color: #000000;
+}
+
+/* Neutral project-window frame */
+.window {
+  border-color: #cccccc;
+}
+
+.titlebar {
+  background: #f2f2f2;
+  color: #000000;
+  border-bottom: 1px solid #cccccc;
+}
+
+.titlebar .controls span {
+  background: #ffffff;
+  border-color: #999999;
+}
+
+.titlebar .controls .close {
+  color: #000000;
+}
+
+.titlebar .controls .close:hover {
+  background: #dddddd;
+}
+
+/* Neutral image backgrounds */
+.thumb,
+.viewer .big {
+  background: #f5f5f5;
+  border-color: #cccccc;
+  color: #000000;
+}
+
+.thumb:hover {
+  border-color: #000000;
+}
+
+.win-body .label {
+  border-top-color: #dddddd;
+}
+body,
+button,
+.mono,
+.category h2,
+.item.project .yr,
+.item.project .name,
+.item.simple .yr,
+.titlebar .controls .close {
+  font-family: "Neue Haas Grotesk", Helvetica, Arial, sans-serif;
+}
 </style>
 </head>
 <body>
 
-<div id="lock">
-  <div class="terminal mono">
-    <div class="prompt-line"><span class="sym">&gt;</span><span>ACCESS REQUIRES PASSWORD</span></div>
-    <div class="prompt-line" style="margin-top:0.8rem;">
-      <span class="sym">&gt;</span>
-      <input type="password" id="pass-input" autocomplete="off" spellcheck="false" placeholder="">
-    </div>
-    <div class="error" id="pass-error"></div>
-    <div class="hint">press enter</div>
-  </div>
-</div>
-
 <div id="desktop">
   <main>
     <p class="site-title">Mădălina Zgreabăn's Archive</p>
-    
+
     <div class="category">
       <h2>About</h2>
-      <p class="about-text"> At my core, I am an AI and linguistics researcher, currently pursuing my PhD in responsible AI. The many research questions I have stumbled upon have made me broadly interested in how we create, relate to, and embody technologies; their risks; and their role in how we build memories; and language as a technology. In my free time, I explore these academic questions through the projects collected here, challenging myself to pursue curiosities that are born from my research through different mediums and methodologies. As a result, most of my projects relate to my current academic work, so open to collaborations concerning language, technology, and AI, since this is the topic of my PhD :) </p>
+      <p class="about-text"> I am formally trained as a linguist and AI researcher, currently pursuing my PhD in responsible AI at UU. The many research questions I have stumbled upon over the years have made me very curious about how we create, relate to, and embody technologies; how they shape our memories and language; their risks and, broadly speaking, language as a technology. New media approaches such as (interactive) installations, speculative storytelling, and maybe even performances have particularly attracted me over the years, as I have a background in literature as well. I find them especially fascinating because they are more approachable for a non-academic public, and also because they explore these questions in a way that is rather felt than consciously explored. This archive is a placeholder for these projects. </p>
     </div>
+
     <div class="category">
       <h2>Projects</h2>
       <div id="projects-list"></div>
     </div>
 
     <div class="category">
-      <h2>Expos / Presentations</h2>
+      <h2>Expositions</h2>
       <div id="expos-list"></div>
     </div>
 
@@ -391,13 +473,11 @@
       <div id="residencies-list"></div>
     </div>
 
-
     <div class="category">
       <h2>Courses / Critical AI</h2>
       <div id="courses-list"></div>
     </div>
-    
-    
+
     <div class="category">
       <h2>Contact</h2>
       <div class="contact-icons">
@@ -456,33 +536,6 @@
 </div>
 
 <script>
-
-const PASSWORD = "freewifi2026";
-
-const lock = document.getElementById('lock');
-const passInput = document.getElementById('pass-input');
-const passError = document.getElementById('pass-error');
-
-function tryUnlock() {
-  if (passInput.value === PASSWORD) {
-    sessionStorage.setItem('unlocked', '1');
-    lock.classList.add('hidden');
-    document.getElementById('desktop').classList.add('show');
-  } else {
-    passError.textContent = 'incorrect';
-    passInput.value = '';
-  }
-}
-
-passInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
-
-if (sessionStorage.getItem('unlocked') === '1') {
-  lock.classList.add('hidden');
-  document.getElementById('desktop').classList.add('show');
-} else {
-  setTimeout(() => passInput.focus(), 300);
-}
-
 const projects = [
   {
     id: 'balkanmaxxing',
@@ -497,7 +550,7 @@ const projects = [
     ],
     learn: 'Currently working with iii in The Hague for Chapter 2.',
     images: [
-      'images/balkanmaxxing/1.jpeg', 
+      'images/balkanmaxxing/1.jpeg',
       'images/balkanmaxxing/2.jpeg'
     ],
     presented: []
@@ -510,9 +563,9 @@ const projects = [
     desc: [
       "In a world of AI chatbots, what forms of control are you subjecting yourself to?",
       "The Affirmation Machine is a two-person audio installation about the mechanics of chatbot-amplified delusional spirals, the dangers of reinforcing both mainstream and divergent truths, and how technologies can exploit our existing psychological mechanisms.",
-      "It is designed to be experienced by two people: users are told they will listen to a relaxing, meditative experience, and are instructed to lie down together comfortably, close the cover, put on headphones, and let a machine 'read them' via a camera for a personalized audio experience. Only an illusion; the camera is not functional and only serves the purpose of people feeling like they are being watched. The audio starts once participants press a button, after which they hear a comforting meditation-like voice giving them instructions for ~7 minutes. The participants lay mostly relaxed, until close to the end when they are instructed to look at each other and nod to answer a question. Upon exiting the installation, they are instructed to take a question card and discuss the experience with each other, aimed at sparking conversation about AI chatbot use and its surrounding systems of control.",
+      "It is designed to be experienced by two people: users are told they will listen to a relaxing, meditative experience, and are instructed to lie down together comfortably, close the cover, put on headphones, and let a machine 'read them' via a camera for a personalized audio experience. Only an illusion; the camera is not functional and only serves the purpose of people feeling like they are being watched. The audio starts once participants press a button, after which they hear a comforting meditation-like voice giving them instructions for ~7 minutes. The participants lay mostly relaxed, until close to the end when they are instructed to look at each other and nod to answer a question. Upon exiting the installation, they are instructed to take a question card and discuss the experience with each other, aimed at sparking conversation about AI chatbot use and its surrounding systems of control."
     ],
-    learn: 'Learned and helped about/with the conceptual and physical design of the  installation.',
+    learn: 'Helped with the conceptual and physical design of the  installation. Build-up. Graphic Design (Website, Question Cards). Expositon Build-up.',
     images: [
       'images/affirmation/1.jpg',
       'images/affirmation/2.jpg',
@@ -527,8 +580,8 @@ const projects = [
   }
 ];
 
-
 const listEl = document.getElementById('projects-list');
+
 projects.forEach(p => {
   const btn = document.createElement('button');
   btn.className = 'item project';
@@ -538,13 +591,17 @@ projects.forEach(p => {
 });
 
 const expos = [
-  { year: '[2026]', org: 'Final CODE presentation', programme: 'The Affirmation Machine' },
+    { year: '[2026]', org: 'Dutch Design Week: Code Terms of Intimacy', programme: 'The Affirmation Machine' },
+   { year: '[2026]', org: 'Makers Meet and Eat', programme: 'The Affirmation Machine' },
+  { year: '[2026]', org: 'Final CODE presentation', programme: 'The Affirmation Machine' }
 ];
+
 const residencies = [
-  { year: '[2026]', org: 'Impakt', programme: 'CODE: Reclaiming Digital Agency' },
+  { year: '[2026]', org: 'Impakt', programme: 'CODE: Reclaiming Digital Agency' }
 ];
+
 const courses = [
-  { year: '[2026]', org: 'Baltan Laboratories', programme: 'Make Technology Yours Again 2' },
+  { year: '[2026]', org: 'Baltan Laboratories', programme: 'Make Technology Yours Again 2' }
 ];
 
 function renderSimple(containerId, rows) {
@@ -588,11 +645,14 @@ function openWindow(p) {
   winLearn.textContent = p.learn || '';
 
   const hasPresented = p.presented && p.presented.length > 0;
-  winPresented.innerHTML = hasPresented ? p.presented.map(line => `<p class="learn">${line}</p>`).join('') : '';
+  winPresented.innerHTML = hasPresented
+    ? p.presented.map(line => `<p class="learn">${line}</p>`).join('')
+    : '';
   presentedLabel.style.display = hasPresented ? '' : 'none';
   winPresented.style.display = hasPresented ? '' : 'none';
 
   winThumbs.innerHTML = '';
+
   (p.images || []).forEach((src, i) => {
     const t = document.createElement('div');
     t.className = 'thumb';
@@ -615,9 +675,17 @@ document.getElementById('viewer-back').addEventListener('click', () => {
   gallery.classList.remove('hidden');
 });
 
-document.getElementById('win-close').addEventListener('click', () => overlay.classList.remove('open'));
-overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') overlay.classList.remove('open'); });
+document.getElementById('win-close').addEventListener('click', () => {
+  overlay.classList.remove('open');
+});
+
+overlay.addEventListener('click', e => {
+  if (e.target === overlay) overlay.classList.remove('open');
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') overlay.classList.remove('open');
+});
 </script>
 
 </body>
